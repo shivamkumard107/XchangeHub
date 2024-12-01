@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.jetbrains.kotlin.kapt)
+    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -54,6 +55,10 @@ dependencies {
     // retrofit
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation(libs.retrofit.kotlinx.serializer)
+
+    //Serialization
+    implementation(libs.kotlin.serialization.json)
 
     // glide
     implementation(libs.glide)
