@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">XchangeHub</string>
+    <string name="symbol_equal">=</string>
+    <string name="one">1</string>
+    <string name="triple_dash">---</string>
+    <string name="your_desired_amount">Your desired amount</string>
 </resources>
