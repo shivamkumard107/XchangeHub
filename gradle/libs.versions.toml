@@ -60,3 +60,4 @@ jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = 
 dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 jetbrains-kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+jetbrains-kotlin-parcelize = {id = "org.jetbrains.kotlin.plugin.parcelize", version.ref="kotlin"}

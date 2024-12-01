@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.kapt)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.jetbrains.kotlin.serialization)
+    alias(libs.plugins.jetbrains.kotlin.parcelize)
 }
 
 android {
@@ -21,8 +22,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_KEY", "\"c3bd89e29bd0480284e7d7fff10e9258\"")
+        }
         release {
             isMinifyEnabled = false
+            buildConfigField("String", "API_KEY", "\"9a3a50279fca47939c23f604c68ebbe2\"")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -38,6 +43,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 

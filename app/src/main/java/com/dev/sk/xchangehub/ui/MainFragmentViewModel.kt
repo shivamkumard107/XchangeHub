@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class MainFragmentViewModel @Inject constructor(private val repository: Any) : ViewModel() {
+class MainFragmentViewModel @Inject constructor() : ViewModel() {
 
     private val _userQuery: MutableStateFlow<Double> = MutableStateFlow(0.0)
     private val _uiState = MutableStateFlow("")
