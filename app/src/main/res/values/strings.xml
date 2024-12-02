@@ -4,4 +4,7 @@
     <string name="one">1</string>
     <string name="triple_dash">---</string>
     <string name="your_desired_amount">Your desired amount</string>
+    <string name="currency_name">Indian Rupee</string>
+    <string name="amount">23.31</string>
+    <string name="default_currency_code">INR</string>
 </resources>

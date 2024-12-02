@@ -15,8 +15,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.dev.sk.xchangehub.databinding.FragmentMainBinding
-import com.dev.sk.xchangehub.domain.model.CurrencyDTO
 import com.dev.sk.xchangehub.utils.DEFAULT_BASE_CURRENCY
+import com.dev.sk.xchangehub.utils.formatCurrency
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -26,7 +26,13 @@ class MainFragment : Fragment() {
 
     private val viewModel: MainFragmentViewModel by viewModels()
     private lateinit var binding: FragmentMainBinding
-    private lateinit var adapter: ArrayAdapter<CurrencyDTO>
+    private val currencyListAdapter by lazy {
+        ArrayAdapter<String>(
+            requireContext(),
+            simple_spinner_item
+        )
+    }
+    private val exchangeRateAdapter by lazy { ExchangeCurrencyAdapter() }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,9 +48,22 @@ class MainFragment : Fragment() {
 
     private fun collectFlows() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.uiState.collect {
-                adapter.addAll(it.availableCurrencies.orEmpty())
-                adapter.notifyDataSetChanged()
+            viewModel.uiState.collect { uiState ->
+                val availableCurrencies = uiState.availableCurrencies.orEmpty()
+                currencyListAdapter.apply {
+                    clear()
+                    addAll(availableCurrencies.map { it.currencyCode }.toList())
+                    notifyDataSetChanged()
+                }
+
+                val data = availableCurrencies.mapNotNull { currency ->
+                    uiState.convertedAmounts?.get(currency)?.let { amount ->
+                        CurrencyExchangeItem(amount.formatCurrency(), currency.currencyCode, currency.currencyName)
+                    }
+                }
+
+                exchangeRateAdapter.submitList(data)
+                binding.progressBar.visibility = View.GONE
             }
         }
     }
@@ -60,8 +79,13 @@ class MainFragment : Fragment() {
                         position: Int,
                         id: Long
                     ) {
-                        val currencyDTO = adapter.getItem(position)
-                        currencyDTO?.let { viewModel.selectCurrency(it) }
+                        val currencyDTO = currencyListAdapter.getItem(position)
+                        val selected =
+                            viewModel.uiState.value.availableCurrencies?.find { it.currencyCode == currencyDTO }
+                        selected?.let {
+                            viewModel.selectCurrency(it)
+                            progressBar.visibility = View.VISIBLE
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -73,10 +97,9 @@ class MainFragment : Fragment() {
 
     private fun setupUI() {
         binding.apply {
-            exchangeRateList.adapter = ExchangeCurrencyAdapter()
+            exchangeRateList.adapter = exchangeRateAdapter
             exchangeRateList.layoutManager = GridLayoutManager(context, 3, VERTICAL, false)
-            adapter = ArrayAdapter<CurrencyDTO>(requireContext(), simple_spinner_item)
-            targetCurrencySelector.adapter = adapter
+            targetCurrencySelector.adapter = currencyListAdapter
         }
     }
 

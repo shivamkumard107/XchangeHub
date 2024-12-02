@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.dev.sk.xchangehub.databinding.ItemViewBinding
-import java.util.Locale
 
 class ExchangeCurrencyAdapter : ListAdapter<CurrencyExchangeItem, ViewHolder>(ItemDiffCallback) {
 
@@ -20,14 +19,14 @@ class ExchangeCurrencyAdapter : ListAdapter<CurrencyExchangeItem, ViewHolder>(It
     }
 
 
-    inner class CurrencyExchangeVH(private val binding: ItemViewBinding) :
+    private inner class CurrencyExchangeVH(private val binding: ItemViewBinding) :
         ViewHolder(binding.root) {
 
         fun bind(item: CurrencyExchangeItem) {
             binding.apply {
                 currencyCode.text = item.code
                 currencyName.text = item.name
-                amount.text = String.format(Locale.US, item.amount.toString())
+                amount.text = item.amount
             }
         }
     }

@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
-            android:text="INR"
+            android:text="@string/default_currency_code"
             android:textColor="#000000"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -33,18 +33,22 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="8dp"
-            android:text="Indian Rupee"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:gravity="center"
+            android:text="@string/currency_name"
             android:textColor="#000000"
-            android:textSize="16sp" />
+            android:textSize="13sp" />
 
         <TextView
             android:id="@+id/amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="23.31"
+            android:text="@string/amount"
+            android:maxLines="1"
             android:textColor="#000000"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
     </LinearLayout>
