@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val mainFragment = MainFragment.instance();
         supportFragmentManager.beginTransaction()
-            .add(mainFragment, MainFragment.TAG)
+            .add(R.id.container, mainFragment, MainFragment.TAG)
             .addToBackStack(MainFragment.TAG)
             .commit()
     }
