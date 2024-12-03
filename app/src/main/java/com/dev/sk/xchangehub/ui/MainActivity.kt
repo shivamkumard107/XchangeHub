@@ -13,7 +13,6 @@ class MainActivity : AppCompatActivity() {
         val mainFragment = MainFragment.instance();
         supportFragmentManager.beginTransaction()
             .add(R.id.container, mainFragment, MainFragment.TAG)
-            .addToBackStack(MainFragment.TAG)
             .commit()
     }
 }

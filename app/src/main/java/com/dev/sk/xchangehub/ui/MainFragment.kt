@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.dev.sk.xchangehub.databinding.FragmentMainBinding
 import com.dev.sk.xchangehub.utils.DEFAULT_BASE_CURRENCY
@@ -58,7 +59,11 @@ class MainFragment : Fragment() {
 
                 val data = availableCurrencies.mapNotNull { currency ->
                     uiState.convertedAmounts?.get(currency)?.let { amount ->
-                        CurrencyExchangeItem(amount.formatCurrency(), currency.currencyCode, currency.currencyName)
+                        CurrencyExchangeItem(
+                            amount.formatCurrency(),
+                            currency.currencyCode,
+                            currency.currencyName
+                        )
                     }
                 }
 
@@ -97,8 +102,18 @@ class MainFragment : Fragment() {
 
     private fun setupUI() {
         binding.apply {
+            val manager = GridLayoutManager(context, 3, VERTICAL, false)
             exchangeRateList.adapter = exchangeRateAdapter
-            exchangeRateList.layoutManager = GridLayoutManager(context, 3, VERTICAL, false)
+            exchangeRateAdapter.registerAdapterDataObserver(object : AdapterDataObserver() {
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    manager.smoothScrollToPosition(
+                        exchangeRateList,
+                        null,
+                        0
+                    )
+                }
+            })
+            exchangeRateList.layoutManager = manager
             targetCurrencySelector.adapter = currencyListAdapter
         }
     }
