@@ -36,7 +36,7 @@
                 android:inputType="numberDecimal"
                 android:minWidth="48dp"
                 android:minHeight="48dp"
-                android:text="@string/one"
+                tools:text="@string/one"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
