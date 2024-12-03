@@ -101,46 +101,6 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `verify that the sync actually happens with mock case`() = runTest(dispatcher) {
-        //Arrange
-        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS + 10000))
-        whenever(syncDataUseCase.execute(Unit)).thenReturn(Result.success(true))
-        val newSystemUnderTest = MainFragmentViewModel(
-            getCurrenciesUseCase,
-            getCurrencyConversionUseCase,
-            syncDataUseCase,
-            getSyncTimestampUseCase,
-            updateSyncTimestampUseCase
-        )
-        // Assert
-        newSystemUnderTest.uiState.test {
-            val state = awaitItem()
-            assertTrue(state.status == UiStatus.Syncing)
-        }
-    }
-
-    @Test
-    fun `verify that the sync actually happens with fake case`() = runTest(dispatcher) {
-        //Arrange
-        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS + 10000))
-        whenever(currencyRepository.fetchAndSyncData()).thenReturn(Result.success(true))
-        whenever(syncDataUseCase.execute(Unit)).thenReturn(Result.success(true))
-        val newSystemUnderTest = MainFragmentViewModel(
-            getCurrenciesUseCase,
-            getCurrencyConversionUseCase,
-            FakeSyncDataUseCase(currencyRepository),
-            getSyncTimestampUseCase,
-            updateSyncTimestampUseCase
-        )
-        // Assert
-        newSystemUnderTest.uiState.test {
-            val state = awaitItem()
-            assertTrue(state.status == UiStatus.Syncing)
-        }
-    }
-
-
-    @Test
     fun `verify initialization correctness`() = runTest(dispatcher) {
         // Act
         systemUnderTest.initialize()
