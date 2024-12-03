@@ -1,14 +1,6 @@
 package com.dev.sk.xchangehub.presentation.home
 
 import app.cash.turbine.test
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import com.dev.sk.xchangehub.domain.base.DataState
 import com.dev.sk.xchangehub.domain.base.UseCase
 import com.dev.sk.xchangehub.domain.model.CurrencyDTO
@@ -18,7 +10,17 @@ import com.dev.sk.xchangehub.domain.usecase.GetCurrencyConversionUseCase
 import com.dev.sk.xchangehub.domain.usecase.GetSynchronousTimestampUseCase
 import com.dev.sk.xchangehub.domain.usecase.SyncDataUseCase
 import com.dev.sk.xchangehub.domain.usecase.UpdateSynchronousTimestampUseCase
+import com.dev.sk.xchangehub.ui.MainFragmentViewModel
+import com.dev.sk.xchangehub.ui.UiStatus
 import com.dev.sk.xchangehub.utils.THIRTY_MIN_IN_MILLIS
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -40,7 +42,7 @@ class HomeViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
 
-    private lateinit var systemUnderTest: HomeViewModel
+    private lateinit var systemUnderTest: MainFragmentViewModel
 
     private var getCurrenciesUseCase: GetCurrenciesUseCase = mock()
     private var getCurrencyConversionUseCase: GetCurrencyConversionUseCase = mock()
@@ -50,7 +52,7 @@ class HomeViewModelTest {
     private var currencyRepository: CurrencyRepository = mock()
 
     private val currencyUSD = CurrencyDTO("USD", "United States Dollar")
-    private val currencyJPY =  CurrencyDTO("JPY", "Japanese Yen")
+    private val currencyJPY = CurrencyDTO("JPY", "Japanese Yen")
     private val currencyINR = CurrencyDTO("INR", "Indian Rupee")
 
     private val dummyCurrencyList: List<CurrencyDTO> = listOf(
@@ -67,45 +69,73 @@ class HomeViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
-    fun setup() = runBlocking{
+    fun setup() = runBlocking {
         Dispatchers.setMain(dispatcher)
         //Arrange
         whenever(getSyncTimestampUseCase.execute()).thenReturn(-1L)
-        whenever(getCurrenciesUseCase.execute(any())).thenReturn(flowOf(DataState.Loading, DataState.Success(dummyCurrencyList)))
-        whenever(getCurrencyConversionUseCase.execute(any())).thenReturn(flowOf(DataState.Loading, DataState.Success(dummyCurrencyConversionMap)))
-        systemUnderTest = HomeViewModel(getCurrenciesUseCase, getCurrencyConversionUseCase, syncDataUseCase, getSyncTimestampUseCase, updateSyncTimestampUseCase)
+        whenever(getCurrenciesUseCase.execute(any())).thenReturn(
+            flowOf(
+                DataState.Loading,
+                DataState.Success(dummyCurrencyList)
+            )
+        )
+        whenever(getCurrencyConversionUseCase.execute(any())).thenReturn(
+            flowOf(
+                DataState.Loading,
+                DataState.Success(dummyCurrencyConversionMap)
+            )
+        )
+        systemUnderTest = MainFragmentViewModel(
+            getCurrenciesUseCase,
+            getCurrencyConversionUseCase,
+            syncDataUseCase,
+            getSyncTimestampUseCase,
+            updateSyncTimestampUseCase
+        )
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @After
-    fun tearDown(){
+    fun tearDown() {
         Dispatchers.resetMain()
     }
 
     @Test
     fun `verify that the sync actually happens with mock case`() = runTest(dispatcher) {
         //Arrange
-        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS+10000))
+        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS + 10000))
         whenever(syncDataUseCase.execute(Unit)).thenReturn(Result.success(true))
-        val newSystemUnderTest = HomeViewModel(getCurrenciesUseCase, getCurrencyConversionUseCase, syncDataUseCase, getSyncTimestampUseCase, updateSyncTimestampUseCase)
+        val newSystemUnderTest = MainFragmentViewModel(
+            getCurrenciesUseCase,
+            getCurrencyConversionUseCase,
+            syncDataUseCase,
+            getSyncTimestampUseCase,
+            updateSyncTimestampUseCase
+        )
         // Assert
         newSystemUnderTest.uiState.test {
             val state = awaitItem()
-            assertTrue(state.status==UiStatus.Syncing)
+            assertTrue(state.status == UiStatus.Syncing)
         }
     }
 
     @Test
     fun `verify that the sync actually happens with fake case`() = runTest(dispatcher) {
         //Arrange
-        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS+10000))
+        whenever(getSyncTimestampUseCase.execute()).thenReturn(System.currentTimeMillis() - (THIRTY_MIN_IN_MILLIS + 10000))
         whenever(currencyRepository.fetchAndSyncData()).thenReturn(Result.success(true))
         whenever(syncDataUseCase.execute(Unit)).thenReturn(Result.success(true))
-        val newSystemUnderTest = HomeViewModel(getCurrenciesUseCase, getCurrencyConversionUseCase, FakeSyncDataUseCase(currencyRepository), getSyncTimestampUseCase, updateSyncTimestampUseCase)
+        val newSystemUnderTest = MainFragmentViewModel(
+            getCurrenciesUseCase,
+            getCurrencyConversionUseCase,
+            FakeSyncDataUseCase(currencyRepository),
+            getSyncTimestampUseCase,
+            updateSyncTimestampUseCase
+        )
         // Assert
         newSystemUnderTest.uiState.test {
             val state = awaitItem()
-            assertTrue(state.status==UiStatus.Syncing)
+            assertTrue(state.status == UiStatus.Syncing)
         }
     }
 
@@ -117,7 +147,7 @@ class HomeViewModelTest {
         // Assert
         systemUnderTest.uiState.test {
             val state = awaitItem()
-            assertTrue(state.status==UiStatus.Success)
+            assertTrue(state.status == UiStatus.Success)
             assertTrue(state.convertedAmounts == dummyCurrencyConversionMap)
             cancelAndIgnoreRemainingEvents()
         }
@@ -129,8 +159,8 @@ class HomeViewModelTest {
         systemUnderTest.uiState.test {
             val initialState = awaitItem()
             val finalState = awaitItem()
-            assertTrue(finalState.status==UiStatus.Success)
-            assertTrue(finalState.convertedAmounts == dummyCurrencyConversionMap.mapValues { it.value*100 })
+            assertTrue(finalState.status == UiStatus.Success)
+            assertTrue(finalState.convertedAmounts == dummyCurrencyConversionMap.mapValues { it.value * 100 })
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -160,11 +190,11 @@ class HomeViewModelTest {
         dispatcher.scheduler.advanceTimeBy(200)
         systemUnderTest.uiState.test {
             val initialState = awaitItem()
-            assertEquals(1.0, initialState.amount,0.0)
+            assertEquals(1.0, initialState.amount, 0.0)
             //Debounce
             dispatcher.scheduler.advanceTimeBy(100)
             val debouncedState = awaitItem()
-            assertEquals(100.0, debouncedState.amount,0.0)
+            assertEquals(100.0, debouncedState.amount, 0.0)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -184,8 +214,8 @@ class HomeViewModelTest {
         systemUnderTest.uiState.test {
             val initialState = awaitItem()
             val finalState = awaitItem()
-            assertTrue(finalState.status==UiStatus.Success)
-            assertTrue(finalState.convertedAmounts == dummyCurrencyConversionMap.mapValues { it.value*0 })
+            assertTrue(finalState.status == UiStatus.Success)
+            assertTrue(finalState.convertedAmounts == dummyCurrencyConversionMap.mapValues { it.value * 0 })
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -37,7 +37,7 @@ class MainFragmentViewModel @Inject constructor(
         handleUserQueryDebounce()
     }
 
-    private fun initialize() {
+    fun initialize() {
         if (isSyncRequired()) {
             doSync()
         } else {
