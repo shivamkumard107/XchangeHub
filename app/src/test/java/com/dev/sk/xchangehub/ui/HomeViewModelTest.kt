@@ -1,4 +1,4 @@
-package com.dev.sk.xchangehub.presentation.home
+package com.dev.sk.xchangehub.ui
 
 import app.cash.turbine.test
 import com.dev.sk.xchangehub.domain.base.DataState
@@ -10,9 +10,6 @@ import com.dev.sk.xchangehub.domain.usecase.GetCurrencyConversionUseCase
 import com.dev.sk.xchangehub.domain.usecase.GetSynchronousTimestampUseCase
 import com.dev.sk.xchangehub.domain.usecase.SyncDataUseCase
 import com.dev.sk.xchangehub.domain.usecase.UpdateSynchronousTimestampUseCase
-import com.dev.sk.xchangehub.ui.MainFragmentViewModel
-import com.dev.sk.xchangehub.ui.UiStatus
-import com.dev.sk.xchangehub.utils.THIRTY_MIN_IN_MILLIS
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
