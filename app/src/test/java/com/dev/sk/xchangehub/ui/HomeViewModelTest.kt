@@ -10,6 +10,9 @@ import com.dev.sk.xchangehub.domain.usecase.GetCurrencyConversionUseCase
 import com.dev.sk.xchangehub.domain.usecase.GetSynchronousTimestampUseCase
 import com.dev.sk.xchangehub.domain.usecase.SyncDataUseCase
 import com.dev.sk.xchangehub.domain.usecase.UpdateSynchronousTimestampUseCase
+import com.dev.sk.xchangehub.utils.DispatcherProviderImpl
+import com.dev.sk.xchangehub.utils.THIRTY_MIN_IN_MILLIS
+import com.dev.sk.xchangehub.utils.TestDispatcherProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -47,6 +50,7 @@ class HomeViewModelTest {
     private var getSyncTimestampUseCase: GetSynchronousTimestampUseCase = mock()
     private var updateSyncTimestampUseCase: UpdateSynchronousTimestampUseCase = mock()
     private var currencyRepository: CurrencyRepository = mock()
+    private var testDispatcher = TestDispatcherProvider()
 
     private val currencyUSD = CurrencyDTO("USD", "United States Dollar")
     private val currencyJPY = CurrencyDTO("JPY", "Japanese Yen")
@@ -87,7 +91,8 @@ class HomeViewModelTest {
             getCurrencyConversionUseCase,
             syncDataUseCase,
             getSyncTimestampUseCase,
-            updateSyncTimestampUseCase
+            updateSyncTimestampUseCase,
+            dispatchers = testDispatcher
         )
     }
 

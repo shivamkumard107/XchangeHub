@@ -10,6 +10,8 @@ import com.dev.sk.xchangehub.data.local.sharedpref.DefaultSharedPreferenceServic
 import com.dev.sk.xchangehub.data.local.sharedpref.SharedPreferenceService
 import com.dev.sk.xchangehub.domain.helper.CurrencyConverterHelper
 import com.dev.sk.xchangehub.domain.helper.DefaultCurrencyConverterHelper
+import com.dev.sk.xchangehub.utils.DispatcherProvider
+import com.dev.sk.xchangehub.utils.DispatcherProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -61,6 +63,11 @@ interface AppModule {
             sharedPreferences: SharedPreferences
         ): SharedPreferenceService {
             return DefaultSharedPreferenceService(sharedPreferences)
+        }
+
+        @Provides
+        fun provideDispatcherProvider(): DispatcherProvider {
+            return DispatcherProviderImpl()
         }
     }
 }

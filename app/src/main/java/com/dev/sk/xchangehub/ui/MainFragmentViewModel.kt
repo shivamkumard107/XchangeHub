@@ -8,6 +8,7 @@ import com.dev.sk.xchangehub.domain.base.UseCase
 import com.dev.sk.xchangehub.domain.model.CurrencyDTO
 import com.dev.sk.xchangehub.domain.model.CurrencyRequest
 import com.dev.sk.xchangehub.utils.DEFAULT_BASE_CURRENCY
+import com.dev.sk.xchangehub.utils.DispatcherProvider
 import com.dev.sk.xchangehub.utils.THIRTY_MIN_IN_MILLIS
 import com.dev.sk.xchangehub.utils.toSafeDouble
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,8 @@ class MainFragmentViewModel @Inject constructor(
     private val getCurrencyConversionUseCase: UseCase<CurrencyRequest, Flow<DataState<Map<CurrencyDTO, Double>>>>,
     private val syncDataUseCase: UseCase<Unit, Result<Boolean>>,
     private val getSyncTimestampUseCase: SynchronousUseCase<Unit, Long>,
-    private val updateSyncTimestampUseCase: SynchronousUseCase<Unit, Unit>
+    private val updateSyncTimestampUseCase: SynchronousUseCase<Unit, Unit>,
+    private val dispatchers: DispatcherProvider
 ) : ViewModel() {
 
     private val _userQuery: MutableStateFlow<Double> = MutableStateFlow(0.0)
@@ -58,7 +60,7 @@ class MainFragmentViewModel @Inject constructor(
 
     fun selectCurrency(currencyDTO: CurrencyDTO) {
         _uiState.value = _uiState.value.copy(selectedCurrency = currencyDTO)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             getCurrencyConversionUseCase.execute(CurrencyRequest(currencyDTO))
                 .collect { conversionMapState ->
                     when (conversionMapState) {
@@ -111,7 +113,7 @@ class MainFragmentViewModel @Inject constructor(
 
     private fun doSync() {
         _uiState.value = _uiState.value.copy(status = UiStatus.Syncing)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             val result = syncDataUseCase.execute(Unit)
             result.fold(
                 onSuccess = {
@@ -127,7 +129,7 @@ class MainFragmentViewModel @Inject constructor(
     }
 
     private fun getAvailableCurrencies() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatchers.io) {
             getCurrenciesUseCase.execute(Unit).collect { currencyState ->
                 when (currencyState) {
                     is DataState.Error -> {
